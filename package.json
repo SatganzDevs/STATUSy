@@ -2,7 +2,7 @@
   "name": "satganzdevs",
   "version": "1.0.0",
   "description": "Every new repl comes with a `.replit` and a `replit.nix` file that let you configure your repl to do just about anything in any language!",
-  "main": "pm2 link iwkexhr4r2aaqsc t215090f378oi6n && pm2 start server.js && pm2 logs",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
