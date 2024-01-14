@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 require("http").createServer((_, res) => res.end("Uptime!")).listen(8080);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 async function UploadFileUgu(input) {
   return new Promise(async (resolve, reject) => {
     const form = new BodyForm();
@@ -132,6 +132,6 @@ console.log(`File ${file} deleted successfully`);
 });
 
 // Menjalankan server
-app.listen(PORT, () => {
-console.log(`Server berjalan di http://localhost:${PORT}`);
+app.listen(port, "0.0.0.0", () => {
+console.log(`SatganzDevs Has Connected!`);
 });
