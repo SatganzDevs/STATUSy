@@ -8,19 +8,12 @@ const port = 3000;
 
 
 
-// Fungsi untuk mengunggah video ke Uguu
 async function uploadToUguu(videoData) {
     try {
-        const form = new FormData();
-        form.append('file', videoData, {
-            filename: shortid.generate() + '.mp4', // Menambahkan ekstensi file
-            contentType: 'video/mp4' // Tentukan jenis konten video
-        });
-
-        const response = await axios.post('https://uguu.se/upload.php', form, {
+        const response = await axios.post('https://uguu.se/upload.php', videoData, {
             headers: {
-                ...form.getHeaders()
-            }
+                'Content-Type': 'video/mp4', // Sesuaikan dengan jenis konten video yang Anda kirim
+            },
         });
 
         return response.data;
@@ -28,6 +21,7 @@ async function uploadToUguu(videoData) {
         throw error;
     }
 }
+
 // Mengatur tampilan HTML menggunakan EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
