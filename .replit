@@ -1,0 +1,10 @@
+modules = ["nodejs-20:v10-20231103-2b03dda"]
+hidden = [".config", "package-lock.json"]
+run = "npm start"
+
+[nix]
+channel = "stable-23_05"
+
+[deployment]
+run = ["sh", "-c", "npm run start"]
+deploymentTarget = "cloudrun"

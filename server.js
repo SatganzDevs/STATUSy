@@ -1,5 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin');
+const { getDownloadURL } = require('firebase-admin/storage');
 const bodyParser = require('body-parser');
 const multer = require('multer'); 
 const path = require('path');
@@ -14,7 +15,6 @@ credential: admin.credential.cert(serviceAccount),
 storageBucket: 'video-uploader-satzz.appspot.com' 
 });
 
-const bucket = admin.storage().bucket();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -30,6 +30,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 async function deleteOldFiles() {
 try {
+  const bucket = admin.storage().bucket();
 const [files] = await bucket.getFiles();
 const currentTime = Date.now();
 const maxAge = 3 * 60 * 60 * 1000;
@@ -64,10 +65,7 @@ metadata: {
 contentType: 'video/mp4' 
 }
 });
-const [url] = await file.getSignedUrl({
-action: 'read',
-expires: '03-04-2025' // Atur tanggal kedaluwarsa sesuai kebutuhan Anda
-});
+const url = await getDownloadURL(file);
 res.redirect('https://wa.me/6281268248904?text=.send ' + url);
 } catch (error) {
 console.error('Error uploading video:', error);
