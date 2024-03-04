@@ -1,66 +1,81 @@
 const express = require('express');
-const axios = require('axios');
-const FormData = require('form-data');
-const shortid = require('shortid');
+const admin = require('firebase-admin');
+const bodyParser = require('body-parser');
+const multer = require('multer'); 
 const path = require('path');
+const serviceAccount = require('./admin.json');
+
 const app = express();
 const port = 3000;
 
 
+admin.initializeApp({
+credential: admin.credential.cert(serviceAccount),
+storageBucket: 'video-uploader-satzz.appspot.com' 
+});
 
-async function uploadToUguu(videoData) {
-    try {
-        const response = await axios.post('https://uguu.se/upload.php', videoData, {
-            headers: {
-                'Content-Type': 'video/mp4', // Sesuaikan dengan jenis konten video yang Anda kirim
-            },
-        });
+const bucket = admin.storage().bucket();
 
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-// Mengatur tampilan HTML menggunakan EJS
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use('/views', express.static('views'));
 app.set('trust proxy', true);
-app.use(express.json({ limit: '50mb' }));
 
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+async function deleteOldFiles() {
+try {
+const [files] = await bucket.getFiles();
+const currentTime = Date.now();
+const maxAge = 3 * 60 * 60 * 1000;
+for (const file of files) {
+const [metadata] = await file.getMetadata();
+const creationTime = new Date(metadata.timeCreated).getTime();
+if (currentTime - creationTime > maxAge) {
+await file.delete();
+console.log(`File ${file.name} telah dihapus.`);
+}
+}
+} catch (error) {
+console.error('Error deleting old files:', error);
+}
+}
 
-// Menangani permintaan GET ke halaman unggah
+deleteOldFiles();
+
 app.get('/', (req, res) => {
 res.render('index');
 });
 
 
-
-
-// Endpoint untuk mengunggah video ke Uguu
-app.post('/upload', async (req, res) => {
-    try {
-        // Ambil data video dari body permintaan
-        const videoData = req.body.videoData;
-
-        // Unggah video ke Uguu
-        const uguuResponse = await uploadToUguu(videoData);
-
-        // Buat URL untuk video yang diunggah
-        const videoUrl = `https://wa.me/6281268248904?text=kirim ${uguuResponse.url}`;
-
-        // Kirim URL video sebagai respons
-        res.send(videoUrl);
-    } catch (error) {
-        console.error('Error uploading video:', error);
-        res.status(500).send('Error uploading video');
-    }
+app.post('/upload', upload.single('file'), async (req, res) => {
+try {
+const videoData = req.file.buffer; 
+const fileName = new Date().toISOString() + '.mp4';
+const bucket = admin.storage().bucket();
+const file = bucket.file(fileName);
+await file.save(videoData, {
+metadata: {
+contentType: 'video/mp4' 
+}
 });
-
+const [url] = await file.getSignedUrl({
+action: 'read',
+expires: '03-04-2025' // Atur tanggal kedaluwarsa sesuai kebutuhan Anda
+});
+res.redirect('https://wa.me/6281268248904?text=.send ' + url);
+} catch (error) {
+console.error('Error uploading video:', error);
+res.status(500).send('Error uploading video');
+}
+});
 
 // Menjalankan server
 app.listen(port, () => {
-console.log(`SatganzDevs Has Connected!`);
+console.log(`Server is running on port ${port}`);
 });
