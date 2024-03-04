@@ -7,7 +7,7 @@ const axios = require('axios');
 const fs = require('fs');
 const cron = require('node-cron');
 const { v4: uuidv4 } = require('uuid');
-require("http").createServer((_, res) => res.end("Uptime!")).listen(8080);
+//require("http").createServer((_, res) => res.end("Uptime!")).listen(8080);
 
 const app = express();
 const port = process.env.PORT || 3000;
