@@ -5,7 +5,6 @@ const path = require('path');
 const BodyForm = require('form-data');
 const axios = require('axios');
 const fs = require('fs');
-const cron = require('node-cron');
 const { v4: uuidv4 } = require('uuid');
 //require("http").createServer((_, res) => res.end("Uptime!")).listen(8080);
 
@@ -110,28 +109,8 @@ const videoUrl = `https://wa.me/?text=kirim ` + resu.url;
 res.redirect(videoUrl);
 });
 
-// Tugas terjadwal untuk menghapus file setiap pukul 00:00
-cron.schedule('0 0 * * *', () => {
-const folderPath = path.join(__dirname, 'views', 'uploads');
-fs.readdir(folderPath, (err, files) => {
-if (err) {
-console.error(err);
-} else {
-files.forEach((file) => {
-const filePath = path.join(folderPath, file);
-fs.unlink(filePath, (err) => {
-if (err) {
-console.error(err);
-} else {
-console.log(`File ${file} deleted successfully`);
-}
-});
-});
-}
-});
-});
 
 // Menjalankan server
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, () => {
 console.log(`SatganzDevs Has Connected!`);
 });
