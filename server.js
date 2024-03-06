@@ -30,8 +30,11 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 async function deleteOldFiles() {
 try {
-  const bucket = admin.storage().bucket();
-const [files] = await bucket.getFiles();
+const bucket = admin.storage().bucket();
+const options = {
+prefix: 'STATUS-HD/'
+};
+const [files] = await bucket.getFiles(options);
 const currentTime = Date.now();
 const maxAge = 3 * 60 * 60 * 1000;
 for (const file of files) {
@@ -59,7 +62,7 @@ try {
 const videoData = req.file.buffer; 
 const fileName = new Date().toISOString() + '.mp4';
 const bucket = admin.storage().bucket();
-const file = bucket.file(fileName);
+const file = bucket.file('STATUS-HD/' + fileName);
 await file.save(videoData, {
 metadata: {
 contentType: 'video/mp4' 
