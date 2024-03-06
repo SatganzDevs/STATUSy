@@ -53,9 +53,6 @@ app.get('/', (req, res) => {
 res.render('index');
 });
 
-app.get('/sw.js', (req, res) => {
-res.sendFile(path.join(__dirname, 'sw.js');
-});
 
 app.post('/upload', upload.single('file'), async (req, res) => {
 try {
