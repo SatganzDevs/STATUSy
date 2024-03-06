@@ -47,15 +47,6 @@
         document.getElementById('uploadForm').submit();
       }, 2000); // Change 2000 to the desired delay in milliseconds
     });
-    $(document).ready(function () {
-      Notification.requestPermission().then(function(permission) {
-        if (permission === 'granted') {
-          alert('Notification permission granted!');
-        } else if (permission === 'denied') {
-          alert('Notification permission denied. You can change this in your browser settings.');
-        }
-      });
-    });
   </script>
 </body>
 </html>
